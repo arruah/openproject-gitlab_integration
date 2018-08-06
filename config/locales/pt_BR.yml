@@ -17,6 +17,6 @@ pt_BR:
       *%{gitlab_user}* pushed to branch "%{branch_name}":%{branch_url} of %{repository}":%{repository_url}
       ("Compare changes":%{push_url})
 
-    push_comment_commit:
+    push_comment_commit: >
       > *"%{commit_hash}":%{commit_url}*: Adicionando a classe para a logo de DeVry
       > - *%{author_commit}*
