@@ -6,9 +6,9 @@ require 'open_project/gitlab_integration/version'
 Gem::Specification.new do |s|
   s.name        = "openproject-gitlab_integration"
   s.version     = OpenProject::GitlabIntegration::VERSION
-  s.authors     = "Finn GmbH"
-  s.email       = "afranioce@gmail.com"
-  s.homepage    = "https://community.openproject.org/projects/gitlab-integration"  # TODO check this URL
+  s.authors     = "Ensolab"
+  s.email       = "arruah@gmail.com"
+  s.homepage    = "https://github.com/arruah/openproject-gitlab_integration"
   s.summary     = 'OpenProject Gitlab Integration'
   s.description = ''
   s.license     = 'MIT' # e.g. "MIT" or "GPLv3"
