@@ -13,7 +13,7 @@ pt_BR:
       **Referenced in PR:** "%{github_user}":%{github_user_url} referenciada neste pacote de trabalho em
       "Pull request %{pr_number} “%{pr_title}”":%{pr_url} em "%{repository}":%{repository_url}.
 
-    push_comment:
+    push_comment: >
       *%{gitlab_user}* pushed to branch "%{branch_name}":%{branch_url} of %{repository}":%{repository_url}
       ("Compare changes":%{push_url})
 
