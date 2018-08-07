@@ -11,7 +11,7 @@ module OpenProject::GitlabIntegration
     ##
     # Handles an issue_comment webhook notification.
     # The payload looks similar to this:
-    # { user_id: <the id of the OpenProject user in whose name the webhook is processed>,
+    # { open_project_user_id: <the id of the OpenProject user in whose name the webhook is processed>,
     #   github_event: 'issue_comment',
     #   github_delivery: <randomly generated ID idenfitying a single github notification>,
     # Have a look at the github documentation about the next keys:
@@ -28,21 +28,27 @@ module OpenProject::GitlabIntegration
       # if the comment is not associated with a PR, ignore it
       return unless payload['issue']['pull_request']['html_url']
       comment_on_referenced_work_packages payload['comment']['body'], payload
+    rescue => e
+      Rails.logger.error "Failed to handle pull_request event: #{e} #{e.message}"
+      raise e
     end
 
     ##
     # Parses the text for links to WorkPackages and adds a comment
     # to those WorkPackages depending on the payload.
     def self.comment_on_referenced_work_packages(text, payload)
-      user = User.find_by_id(payload['user_id'])
+      user = User.find_by_id(payload['open_project_user_id'])
       wp_ids = extract_work_package_ids(text)
       wps = find_visible_work_packages(wp_ids, user)
 
       # FIXME check user is allowed to update work packages
       # TODO mergeable
 
+      attributes = { journal_notes: notes_for_payload(payload) }
       wps.each do |wp|
-        wp.update_by!(user, :notes => notes_for_payload(payload))
+        ::WorkPackages::UpdateService
+          .new(user: user, work_package: wp)
+          .call(attributes: attributes)
       end
     end
 
@@ -60,9 +66,15 @@ module OpenProject::GitlabIntegration
       #  - https://www.openproject.org/wp/1234
       #  - http://www.openproject.org/work_packages/1234
       #  - https://www.openproject.org/subdirectory/work_packages/1234
-      wp_regex = /http(?:s?):\/\/#{Regexp.escape(Setting.host_name)}\/(?:\S+?\/)*(?:work_packages|wp)\/([0-9]+)/
+       # Or with the following prefix: OP#
+      # e.g.,: This is a reference to OP#1234
+      host_name = Regexp.escape(Setting.host_name)
+      wp_regex = /OP#(\d+)|http(?:s?):\/\/#{host_name}\/(?:\S+?\/)*(?:work_packages|wp)\/([0-9]+)/
 
-      source.scan(wp_regex).flatten.map { |s| s.to_i }.uniq
+      source.scan(wp_regex)
+        .map {|first, second| (first || second).to_i }
+        .select { |el| el > 0 }
+        .uniq
     end
 
     ##
