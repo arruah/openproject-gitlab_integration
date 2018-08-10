@@ -29,7 +29,7 @@ Edit the `Gemfile.plugins` file in your openproject-installation directory to co
 
 ```ruby
 gem "openproject-webhooks", :git => 'https://github.com/finnlabs/openproject-webhooks.git', :branch => 'stable'
-gem "openproject-gitlab_integration", :git => 'https://github.com/afranioce/openproject-gitlab_integration.git', :branch => 'stable'
+gem "openproject-gitlab_integration", :git => 'https://github.com/arruah/openproject-gitlab_integration.git', :branch => 'stable'
 ```
 
 Then update your bundle with:
